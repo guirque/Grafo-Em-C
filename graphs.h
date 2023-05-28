@@ -10,7 +10,10 @@ typedef llist **graph; // graph
 graph createGraph(int size) 
 { 
     graph newGraph = (graph)malloc(sizeof(llist **) * (size+1)); 
-    newGraph[0]->weight = size; 
+    llist* storeMemory = (llist*)malloc(sizeof(llist));
+    storeMemory->weight = size;
+    newGraph[0] = storeMemory;
+    newGraph[0]->weight = size;
     for(int i = 1; i <= size; i++)
     {
         newGraph[i] = NULL;
