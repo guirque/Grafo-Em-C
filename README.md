@@ -40,14 +40,14 @@ Referida, por meio de <code>typedef</code>, como <code>degree</code>, armazena a
 <hr/>
 
 <li><i><code>printAllPaths</code></i> (graph aGraph, int origin, int destination)</code></li>
-  Imprime todos os caminhos entre dois vértices.
+  Imprime todos os caminhos entre dois vértices. Retorna um inteiro 0 ou 1, representando a existência ou não de caminhos entre os vértices especificados.
 <hr/>
 
 <li><i><code>printLowestWeightPath</code></i> (graph aGraph, int origin, int destination, int weight)</code></li>
-  Imprime o caminho de menor peso (custo) total entre dois vértices. Também imprime o valor total do custo desse caminho. 
+  Imprime o caminho de menor peso (custo) total entre dois vértices. Também imprime o valor total do custo desse caminho. Retorna um inteiro 0 ou 1, representando a existência ou não de caminhos entre os vértices especificados.
 <hr/>
 
 <li><i><code>printShortestPath</code></i> (graph aGraph, int origin, int destination, int weight)</code></li>
-  Imprime o caminho mais curto entre dois vértices. Também imprime o número total de vértices contidos nesse caminho. 
+  Imprime o caminho mais curto entre dois vértices. Também imprime o número total de vértices contidos nesse caminho. Retorna um inteiro 0 ou 1, representando a existência ou não de caminhos entre os vértices especificados.
 
 </ul>
