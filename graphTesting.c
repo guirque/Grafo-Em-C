@@ -34,6 +34,7 @@ int main()
     printLowestWeightPath(graphExample, 3, 1);
     printf("Shortest path vetween two chosen vertices: \n");
     printShortestPath(graphExample, 3, 1);
+
     pause;
     return 0;
 }

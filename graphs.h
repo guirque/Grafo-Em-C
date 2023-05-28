@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "listForGraphs.h"
 
+//ISSUE: CHECKING PATHS BETWEEN NODES WITH NO CONNECTIONS
+
 // graph ---------------------------------------
 
 typedef llist **graph; // graph
@@ -102,7 +104,7 @@ int isCompleteGraph(graph aGraph)
   return lowestNumOfEdges == size-1;
 }
 
-void printAllPathsR(graph aGraph, int origin, int destination, int position, int v[])
+void printAllPathsR(graph aGraph, int origin, int destination, int position, int v[], int* foundPath)
 {
   //Stop if origin is equal to destination (finishing for loop will also cause it to stop)
   if(origin != destination)
@@ -119,7 +121,7 @@ void printAllPathsR(graph aGraph, int origin, int destination, int position, int
       for(int checkV = 0; checkV < position; checkV++) 
         if(v[checkV] == i->destination) newOrigin = 0;
 
-      if(newOrigin) printAllPathsR(aGraph, i->destination, destination, position + 1, v);
+      if(newOrigin) printAllPathsR(aGraph, i->destination, destination, position + 1, v, foundPath);
     }
   }
   else
@@ -131,21 +133,26 @@ void printAllPathsR(graph aGraph, int origin, int destination, int position, int
       if(i != position - 1) printf("%d -> ", v[i]);
       else printf("%d -> %d]\n", v[i], destination);
     }
+    *foundPath = 1;
   }
 }
 
-//Prints all paths between an origin and its destination
-void printAllPaths(graph aGraph, int origin, int destination)
+//Prints all paths between an origin and its destination.
+int printAllPaths(graph aGraph, int origin, int destination)
 {
   int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
-  printAllPathsR(aGraph, origin, destination, 0, v);
+  int foundPath = 0;
+  printAllPathsR(aGraph, origin, destination, 0, v, &foundPath);
   free(v);
+
+  if(foundPath) return 1;
+  else return 0;
 }
 
-void printLowestWeightPathR(graph aGraph, int origin, int destination, int position, int v[], int totalWeight, int* lowestWeight, int* answer)
+void printLowestWeightPathR(graph aGraph, int origin, int destination, int position, int v[], int totalWeight, int* lowestWeight, int* answer, int* foundPath)
 {
   //Stop if origin is equal to destination (finishing for loop will also cause it to stop)
-  if(origin != destination)
+  if(origin != destination && position < aGraph[0]->weight)
   {
     //Call the same function for different paths beginning in this origin (iterate through list)
     for(llist* i = aGraph[origin]; i != NULL; i = i->next)
@@ -160,13 +167,13 @@ void printLowestWeightPathR(graph aGraph, int origin, int destination, int posit
         if(v[checkV] == i->destination) newOrigin = 0;
 
       //vertex to be visited is new and the total weight won't exceed the lowest found so far
-      if(newOrigin) printLowestWeightPathR(aGraph, i->destination, destination, position + 1, v, totalWeight+i->weight, lowestWeight, answer);
+      if(newOrigin) printLowestWeightPathR(aGraph, i->destination, destination, position + 1, v, totalWeight+i->weight, lowestWeight, answer, foundPath);
     }
   }
   else
   {
     //Path done
-    if(totalWeight < *lowestWeight) 
+    if(totalWeight < *lowestWeight && position < aGraph[0]->weight) 
     {
       *lowestWeight = totalWeight;
       //printf("Lowest weight found: %d\n", *lowestWeight);
@@ -177,36 +184,43 @@ void printLowestWeightPathR(graph aGraph, int origin, int destination, int posit
       {
         answer[i] = v[i];
       }
-
+      
+      *foundPath = 1;
     }
   }
 }
 
 //Prints the path of lowest total weight between an origin and its destination
-void printLowestWeightPath(graph aGraph, int origin, int destination)
+int printLowestWeightPath(graph aGraph, int origin, int destination)
 {
   int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
-  int *answer = (int*)malloc(sizeof(int) * aGraph[0]->weight + 1);
+  int *answer = (int*)malloc(sizeof(int) * (aGraph[0]->weight + 1));
   int lowestWeight = INT_MAX;
-  printLowestWeightPathR(aGraph, origin, destination, 0, v, 0, &lowestWeight, answer); //returns array of lowest total weight
+  int foundPath = 0;
+  printLowestWeightPathR(aGraph, origin, destination, 0, v, 0, &lowestWeight, answer, &foundPath); //returns array of lowest total weight
   
   //Now print it
-  printf("total: %d\n[", lowestWeight);
-  int i = 0;
-  for(; answer[i] != -1; i++)
-  {
-    printf("%d -> ", answer[i]);
+  if(foundPath){
+    printf("total: %d\n[", lowestWeight);
+    int i = 0;
+    for(; answer[i] != -1; i++)
+    {
+      printf("%d -> ", answer[i]);
+    }
+    printf("%d]\n", destination);
   }
-  printf("%d]\n", destination);
   
-  free(v);
+  free(v); free(answer);
+
+  if(foundPath) return 1;
+  else return 0;
 }
 
 
-void printShortestPathR(graph aGraph, int origin, int destination, int position, int v[], int* shortestPath, int* answer)
+void printShortestPathR(graph aGraph, int origin, int destination, int position, int v[], int* shortestPath, int* answer, int* foundPath)
 {
   //Stop if origin is equal to destination (finishing for loop will also cause it to stop)
-  if(origin != destination)
+  if(origin != destination && position < aGraph[0]->weight)
   {
     //Call the same function for different paths beginning in this origin (iterate through list)
     for(llist* i = aGraph[origin]; i != NULL; i = i->next)
@@ -220,14 +234,14 @@ void printShortestPathR(graph aGraph, int origin, int destination, int position,
       for(int checkV = 0; checkV < position; checkV++) 
         if(v[checkV] == i->destination) newOrigin = 0;
 
-      //vertex to be visited is new and the total weight won't exceed the lowest found so far
-      if(newOrigin) printShortestPathR(aGraph, i->destination, destination, position + 1, v, shortestPath, answer);
+      //vertex to be visited is new
+      if(newOrigin) printShortestPathR(aGraph, i->destination, destination, position + 1, v, shortestPath, answer, foundPath);
     }
   }
   else
   {
     //Path done
-    if(position+1 < *shortestPath) 
+    if(position+1 < *shortestPath && position < aGraph[0]->weight) 
     {
       *shortestPath = position+1;
       //printf("Lowest weight found: %d\n", *lowestWeight);
@@ -238,27 +252,33 @@ void printShortestPathR(graph aGraph, int origin, int destination, int position,
       {
         answer[i] = v[i];
       }
-
+      *foundPath = 1;
     }
   }
 }
 
 //Prints the shortest path between an origin and its destination
-void printShortestPath(graph aGraph, int origin, int destination)
+int printShortestPath(graph aGraph, int origin, int destination)
 {
   int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
-  int *answer = (int*)malloc(sizeof(int) * aGraph[0]->weight + 1);
+  int *answer = (int*)malloc(sizeof(int) * (aGraph[0]->weight + 1));
   int shortestPath = INT_MAX;
-  printShortestPathR(aGraph, origin, destination, 0, v, &shortestPath, answer); //returns array of lowest total weight
+  int foundPath = 0;
+  printShortestPathR(aGraph, origin, destination, 0, v, &shortestPath, answer, &foundPath); //returns array of lowest total weight
   
-  //Now print it
-  printf("total: %d\n[", shortestPath);
-  int i = 0;
-  for(; answer[i] != -1; i++)
-  {
-    printf("%d -> ", answer[i]);
+  //Now print it, if a result was found
+  if(foundPath){
+    printf("total: %d\n[", shortestPath);
+    int i = 0;
+    for(; answer[i] != -1; i++)
+    {
+      printf("%d -> ", answer[i]);
+    }
+    printf("%d]\n", destination);
   }
-  printf("%d]\n", destination);
   
-  free(v);
+  free(v); free(answer);
+
+  if(foundPath) return 1;
+  else return 0;
 }
