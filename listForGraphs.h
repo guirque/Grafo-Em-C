@@ -5,8 +5,8 @@
 typedef struct linked_list
 {
     //Valor do elemento.
-    int destino;
-    int custo;
+    int destination;
+    int weight;
     //Ponteiro para o proximo elemento na lista.
     struct linked_list* next;
 } llist;
@@ -19,8 +19,8 @@ void laddToStart(llist** aList, int add, int add2)
     (llist*) malloc(sizeof(llist));
     
     //Modificando informacao do elemento
-    newElement->destino = add; //ok
-    newElement->custo = add2;
+    newElement->destination = add; //ok
+    newElement->weight = add2;
 
     newElement->next = *aList; //Novo elemento aponta para o segundo elemento (que antes era o primeiro)
     *aList = newElement; //Ponteiro apontado por aList (inicio da cadeia) comeca a apontar para esse novo elemento
@@ -34,8 +34,8 @@ void linsert(llist** aList, int index, int add, int add2)
     (llist*) malloc(sizeof(llist));
     
     //Modificando informacao do elemento
-    newElement->destino = add;
-    newElement->custo = add2;
+    newElement->destination = add;
+    newElement->weight = add2;
     
     //Elementos analisados durante busca
     llist* before = NULL;
@@ -71,8 +71,8 @@ void lchange(llist** aList, int index, int change, int change2)
         //Encontrado
         if(i == index)
         {
-            current->destino = change;
-            current->custo = change2;
+            current->destination = change;
+            current->weight = change2;
         }
         //Nao Encontrado
         else
@@ -83,14 +83,14 @@ void lchange(llist** aList, int index, int change, int change2)
 }
 
 //Apaga um elemento numa posicao da lista
-void lerase(llist** aList, int destino, int custo)
+void lerase(llist** aList, int destination, int weight)
 {
     llist* before = NULL;
     llist* current = *aList;
     for(int i = 0; current != NULL; i++)
     {
         //Encontrado
-        if(current->destino == destino && current->custo == custo)
+        if(current->destination == destination && current->weight == weight)
         {
             if(i != 0) before->next = current->next; //Mudando o ponteiro do anterior para o posterior
             else *aList = current->next; //Caso o elemento seja o primeiro da lista, mudamos a quem aponta o ponteiro inicial
@@ -113,8 +113,8 @@ llist* lcreate(int add, int add2)
 {
     //Cria o ponteiro para o primeiro elemento da lista encadeada
     llist* l = (llist*) malloc(sizeof(llist));
-    l->destino = add;
-    l->custo = add2;
+    l->destination = add;
+    l->weight = add2;
     l->next = NULL;
     return l;
 }
@@ -124,7 +124,7 @@ int lget(llist* aList, int index)
 {
     for(int i = 0; i <= index; i++)
     {
-        if(i == index) return aList->destino;
+        if(i == index) return aList->destination;
         else aList = aList->next;
     }
 }
@@ -145,7 +145,7 @@ int lfind(llist* aList, int value)
 {
     for(int i = 0; aList != NULL; i++)
     {
-        if(aList->destino == value) return i;
+        if(aList->destination == value) return i;
         else aList = aList->next;
     }
     return -1;
@@ -156,7 +156,7 @@ llist* lfindPointer(llist* aList, int value)
 {
     for (int i = 0; aList != NULL; i++)
     {
-        if (aList->destino == value) return aList;
+        if (aList->destination == value) return aList;
         else aList = aList->next;
     }
     return NULL;
@@ -169,9 +169,9 @@ void lprint(llist* aList)
     for(int i = 0; aList != NULL; i++)
     {
         if(aList->next != NULL)
-            printf("%d (%d), ", aList->destino, aList->custo);
+            printf("%d (%d), ", aList->destination, aList->weight);
         else
-            printf("%d (%d)", aList->destino, aList->custo);
+            printf("%d (%d)", aList->destination, aList->weight);
         aList = aList->next;
     }
     printf("}");

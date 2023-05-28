@@ -10,7 +10,7 @@ typedef llist **graph; // graph
 graph createGraph(int size) 
 { 
     graph newGraph = (graph)malloc(sizeof(llist **) * (size+1)); 
-    newGraph[0]->custo = size; 
+    newGraph[0]->weight = size; 
     for(int i = 1; i <= size; i++)
     {
         newGraph[i] = NULL;
@@ -33,7 +33,7 @@ void removeEdge(graph graph, int origin, int destination, int weight) {
 
 // Print graph
 void printGraph(graph graph) {
-  for (int i = 1; i <= graph[0]->custo; i++) {
+  for (int i = 1; i <= graph[0]->weight; i++) {
     printf("%d: ", i);
     lprint(graph[i]);
     printf("\n");
@@ -55,7 +55,7 @@ struct degree vertexDegree(graph aGraph, int vertex)
   answer.outdegree = 0;
 
   //For each vertex in graph
-  for(int i = 1; i <= aGraph[0]->custo; i++)
+  for(int i = 1; i <= aGraph[0]->weight; i++)
   {
     llist *currentvertex = aGraph[i];
     int countindegree = 0; //bool
@@ -64,7 +64,7 @@ struct degree vertexDegree(graph aGraph, int vertex)
     //For each edge in the currentvertex
     for(llist* j = currentvertex; j != NULL; j = j->next)
     {
-      if(j->destino == vertex) answer.outdegree++;
+      if(j->destination == vertex) answer.outdegree++;
       if(countindegree) answer.indegree++;
     }
   }
@@ -83,7 +83,7 @@ int isCompleteGraph(graph aGraph)
   //Simple can't have self-loops. Undirected graphs don't allow vertices to have more than one edge with another vertex. 
 
   //For each vertex
-  for(int i = 1; i <= aGraph[0]->custo; i++)
+  for(int i = 1; i <= aGraph[0]->weight; i++)
   {
     size++;
     
@@ -114,9 +114,9 @@ void printAllPathsR(graph aGraph, int origin, int destination, int position, int
       //Make sure the new origin is not a vertex that has already been visited
       int newOrigin = 1;
       for(int checkV = 0; checkV < position; checkV++) 
-        if(v[checkV] == i->destino) newOrigin = 0;
+        if(v[checkV] == i->destination) newOrigin = 0;
 
-      if(newOrigin) printAllPathsR(aGraph, i->destino, destination, position + 1, v);
+      if(newOrigin) printAllPathsR(aGraph, i->destination, destination, position + 1, v);
     }
   }
   else
@@ -134,7 +134,7 @@ void printAllPathsR(graph aGraph, int origin, int destination, int position, int
 //Prints all paths between an origin and its destination
 void printAllPaths(graph aGraph, int origin, int destination)
 {
-  int *v = (int*)malloc(sizeof(int) * aGraph[0]->custo);
+  int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
   printAllPathsR(aGraph, origin, destination, 0, v);
   free(v);
 }
@@ -154,10 +154,10 @@ void printLowestWeightPathR(graph aGraph, int origin, int destination, int posit
       //Make sure the new origin is not a vertex that has already been visited
       int newOrigin = 1;
       for(int checkV = 0; checkV < position; checkV++) 
-        if(v[checkV] == i->destino) newOrigin = 0;
+        if(v[checkV] == i->destination) newOrigin = 0;
 
       //vertex to be visited is new and the total weight won't exceed the lowest found so far
-      if(newOrigin) printLowestWeightPathR(aGraph, i->destino, destination, position + 1, v, totalWeight+i->custo, lowestWeight, answer);
+      if(newOrigin) printLowestWeightPathR(aGraph, i->destination, destination, position + 1, v, totalWeight+i->weight, lowestWeight, answer);
     }
   }
   else
@@ -182,8 +182,8 @@ void printLowestWeightPathR(graph aGraph, int origin, int destination, int posit
 //Prints the path of lowest total weight between an origin and its destination
 void printLowestWeightPath(graph aGraph, int origin, int destination)
 {
-  int *v = (int*)malloc(sizeof(int) * aGraph[0]->custo);
-  int *answer = (int*)malloc(sizeof(int) * aGraph[0]->custo + 1);
+  int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
+  int *answer = (int*)malloc(sizeof(int) * aGraph[0]->weight + 1);
   int lowestWeight = INT_MAX;
   printLowestWeightPathR(aGraph, origin, destination, 0, v, 0, &lowestWeight, answer); //returns array of lowest total weight
   
@@ -215,10 +215,10 @@ void printShortestPathR(graph aGraph, int origin, int destination, int position,
       //Make sure the new origin is not a vertex that has already been visited
       int newOrigin = 1;
       for(int checkV = 0; checkV < position; checkV++) 
-        if(v[checkV] == i->destino) newOrigin = 0;
+        if(v[checkV] == i->destination) newOrigin = 0;
 
       //vertex to be visited is new and the total weight won't exceed the lowest found so far
-      if(newOrigin) printShortestPathR(aGraph, i->destino, destination, position + 1, v, shortestPath, answer);
+      if(newOrigin) printShortestPathR(aGraph, i->destination, destination, position + 1, v, shortestPath, answer);
     }
   }
   else
@@ -243,8 +243,8 @@ void printShortestPathR(graph aGraph, int origin, int destination, int position,
 //Prints the shortest path between an origin and its destination
 void printShortestPath(graph aGraph, int origin, int destination)
 {
-  int *v = (int*)malloc(sizeof(int) * aGraph[0]->custo);
-  int *answer = (int*)malloc(sizeof(int) * aGraph[0]->custo + 1);
+  int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
+  int *answer = (int*)malloc(sizeof(int) * aGraph[0]->weight + 1);
   int shortestPath = INT_MAX;
   printShortestPathR(aGraph, origin, destination, 0, v, &shortestPath, answer); //returns array of lowest total weight
   
