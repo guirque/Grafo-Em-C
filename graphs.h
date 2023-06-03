@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include "listForGraphs.h"
 
-//ISSUE: CHECKING PATHS BETWEEN NODES WITH NO CONNECTIONS
-
 // graph ---------------------------------------
 
 typedef llist **graph; // graph
@@ -69,8 +67,8 @@ struct degree vertexDegree(graph aGraph, int vertex)
     //For each edge in the currentvertex
     for(llist* j = currentvertex; j != NULL; j = j->next)
     {
-      if(j->destination == vertex) answer.outdegree++;
-      if(countindegree) answer.indegree++;
+      if(j->destination == vertex) answer.indegree++;
+      if(countindegree) answer.outdegree++;
     }
   }
     answer.total = answer.indegree + answer.outdegree;
@@ -85,7 +83,8 @@ int isCompleteGraph(graph aGraph)
   int lowestNumOfEdges = 0; //If lowest number of edges of a node is equal to size-1, then the graph is complete.
 
   //If a vertex isn't connected to all other vertices, the graph isn't complete.
-  //Simple can't have self-loops. Undirected graphs don't allow vertices to have more than one edge with another vertex. 
+  //Simple graphs can't have self-loops. Undirected graphs don't allow vertices to have more than one edge with another vertex. 
+  //In order to represent an edge between to nodes with this structure, the programmer must an edge in both directions between those nodes.
 
   //For each vertex
   for(int i = 1; i <= aGraph[0]->weight; i++)
