@@ -84,7 +84,7 @@ int isCompleteGraph(graph aGraph)
 
   //If a vertex isn't connected to all other vertices, the graph isn't complete.
   //Simple graphs can't have self-loops. Undirected graphs don't allow vertices to have more than one edge with another vertex. 
-  //In order to represent an edge between to nodes with this structure, the programmer must an edge in both directions between those nodes.
+  //In order to represent an edge between to nodes with this structure, the programmer must set an edge in both directions between those nodes.
 
   //For each vertex
   for(int i = 1; i <= aGraph[0]->weight; i++)

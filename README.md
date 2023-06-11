@@ -32,7 +32,7 @@ Referida, por meio de <code>typedef</code>, como <code>degree</code>, armazena a
 <hr/>
 
 <li><i><code>isCompleteGraph</code></i> (graph aGraph)</code></li>
-  Retorna 0, caso o grafo não seja completo, e 1, caso contrário. É importante destacar que a definição de completo se aplica a grafos simples (sem laços (self-loops) e duplas direções (mais uma aresta ligando dois vértices)) e não direcionados. Como a implementação do grafo, para este repositório, supõe direções, elas podem ser ignoradas ao analisar se esse grafo é completo ou não.
+  Retorna 0, caso o grafo não seja completo, e 1, caso contrário. É importante destacar que a definição de completo se aplica a grafos simples (sem laços (self-loops) e duplas direções (mais uma aresta ligando dois vértices)) e não direcionados. Como a implementação do grafo, para este repositório, supõe direções, um grafo não direcionado é considerado aquele cujas arestas são direcionadas bilateralmente, isto é, há ida e volta entre dois vértices, para quaisquer vértices que possuam alguma conexão.
 <hr/>
 
 <li><i><code>vertexDegree</code></i> (graph aGraph, int vertex)</code></li>
@@ -43,11 +43,11 @@ Referida, por meio de <code>typedef</code>, como <code>degree</code>, armazena a
   Imprime todos os caminhos entre dois vértices. Retorna um inteiro 0 ou 1, representando a existência ou não de caminhos entre os vértices especificados.
 <hr/>
 
-<li><i><code>printLowestWeightPath</code></i> (graph aGraph, int origin, int destination, int weight)</code></li>
+<li><i><code>printLowestWeightPath</code></i> (graph aGraph, int origin, int destination)</code></li>
   Imprime o caminho de menor peso (custo) total entre dois vértices. Também imprime o valor total do custo desse caminho. Retorna um inteiro 0 ou 1, representando a existência ou não de caminhos entre os vértices especificados.
 <hr/>
 
-<li><i><code>printShortestPath</code></i> (graph aGraph, int origin, int destination, int weight)</code></li>
+<li><i><code>printShortestPath</code></i> (graph aGraph, int origin, int destination)</code></li>
   Imprime o caminho mais curto entre dois vértices. Também imprime o número total de vértices contidos nesse caminho. Retorna um inteiro 0 ou 1, representando a existência ou não de caminhos entre os vértices especificados.
 
 </ul>
