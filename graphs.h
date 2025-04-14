@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "listForGraphs.h"
+#define INT_MAX 2147483647
 
 // graph ---------------------------------------
 
