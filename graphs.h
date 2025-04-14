@@ -3,9 +3,11 @@
 #include "listForGraphs.h"
 #define INT_MAX 2147483647
 
-// graph ---------------------------------------
+// Graph Structure ##################################################################################################################
 
-typedef llist **graph; // graph
+typedef llist **graph;
+
+// Create and Modify Graph ##########################################################################################################
 
 // Create graph structure, with chosen number of nodes / vertices
 graph createGraph(int size) 
@@ -35,6 +37,8 @@ void removeEdge(graph graph, int origin, int destination, int weight) {
   lerase(&graph[origin], destination, weight);
 }
 
+// Graph Visualization ##############################################################################################################
+
 // Print graph
 void printGraph(graph graph) {
   for (int i = 1; i <= graph[0]->weight; i++) {
@@ -44,14 +48,16 @@ void printGraph(graph graph) {
   }
 }
 
-//Graph Degree
+// Graph Analysis ###################################################################################################################
+
+//Graph Degree -------------------------------------------------------
 //Returns a struct with 3 values: the amount of edges ponting to the vertex, the ones coming from the vertex to the outside and the total degree (sum of the two)
-  typedef struct degree
-  {
-    int indegree;
-    int outdegree;
-    int total;
-  } degree;
+typedef struct degree
+{
+  int indegree;
+  int outdegree;
+  int total;
+} degree;
 struct degree vertexDegree(graph aGraph, int vertex)
 {
   struct degree answer;
@@ -76,7 +82,9 @@ struct degree vertexDegree(graph aGraph, int vertex)
     return answer;
 }
 
-//Analyzes if a simple (undirected) graph is complete.
+// Complete Graph Analysis -------------------------------------------
+
+// Analyzes if a simple (undirected) graph is complete.
 int isCompleteGraph(graph aGraph)
 {
   int complete = 1; //bool 
@@ -103,6 +111,8 @@ int isCompleteGraph(graph aGraph)
 
   return lowestNumOfEdges == size-1;
 }
+
+// Print All Paths ---------------------------------------------------
 
 void printAllPathsR(graph aGraph, int origin, int destination, int position, int v[], int* foundPath)
 {
@@ -148,6 +158,85 @@ int printAllPaths(graph aGraph, int origin, int destination)
   if(foundPath) return 1;
   else return 0;
 }
+
+// Get Graph Size ----------------------------------------------------
+
+// Returns graph size (number of nodes, other than the special node 0).
+int getGraphSize(graph aGraph)
+{
+  return aGraph[0]->weight;
+}
+
+// Print Shortest Path -----------------------------------------------
+
+void printShortestPathR(graph aGraph, int origin, int destination, int position, int v[], int* shortestPath, int* answer, int* foundPath)
+{
+  //Stop if origin is equal to destination (finishing for loop will also cause it to stop)
+  if(origin != destination && position < aGraph[0]->weight)
+  {
+    //Call the same function for different paths beginning in this origin (iterate through list)
+    for(llist* i = aGraph[origin]; i != NULL; i = i->next)
+    {
+      //Add this origin to path array (v)
+      v[position] = origin;
+      
+      //Keep checking if there's another path, now beginning in the destination
+      //Make sure the new origin is not a vertex that has already been visited
+      int newOrigin = 1;
+      for(int checkV = 0; checkV < position; checkV++) 
+        if(v[checkV] == i->destination) newOrigin = 0;
+
+      //vertex to be visited is new
+      if(newOrigin) printShortestPathR(aGraph, i->destination, destination, position + 1, v, shortestPath, answer, foundPath);
+    }
+  }
+  else
+  {
+    //Path done
+    if(position+1 < *shortestPath && position < aGraph[0]->weight) 
+    {
+      *shortestPath = position+1;
+      //printf("Lowest weight found: %d\n", *lowestWeight);
+      v[position] = -1;
+      
+      //Copy answer to array
+      for(int i = 0; i <= position; i++)
+      {
+        answer[i] = v[i];
+      }
+      *foundPath = 1;
+    }
+  }
+}
+
+// Prints the shortest path between an origin and its destination.
+// Returns 1 if path was found. 0, otherwise.
+int printShortestPath(graph aGraph, int origin, int destination)
+{
+  int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
+  int *answer = (int*)malloc(sizeof(int) * (aGraph[0]->weight + 1));
+  int shortestPath = INT_MAX;
+  int foundPath = 0;
+  printShortestPathR(aGraph, origin, destination, 0, v, &shortestPath, answer, &foundPath); //returns array of lowest total weight
+  
+  //Now print it, if a result was found
+  if(foundPath){
+    printf("total: %d\n[", shortestPath);
+    int i = 0;
+    for(; answer[i] != -1; i++)
+    {
+      printf("%d -> ", answer[i]);
+    }
+    printf("%d]\n", destination);
+  }
+  
+  free(v); free(answer);
+
+  if(foundPath) return 1;
+  else return 0;
+}
+
+// Print Lowest Weight Path (Backtracking) ---------------------------
 
 void printLowestWeightPathR(graph aGraph, int origin, int destination, int position, int v[], int totalWeight, int* lowestWeight, int* answer, int* foundPath)
 {
@@ -216,78 +305,7 @@ int printLowestWeightPathBacktrack(graph aGraph, int origin, int destination)
   else return 0;
 }
 
-void printShortestPathR(graph aGraph, int origin, int destination, int position, int v[], int* shortestPath, int* answer, int* foundPath)
-{
-  //Stop if origin is equal to destination (finishing for loop will also cause it to stop)
-  if(origin != destination && position < aGraph[0]->weight)
-  {
-    //Call the same function for different paths beginning in this origin (iterate through list)
-    for(llist* i = aGraph[origin]; i != NULL; i = i->next)
-    {
-      //Add this origin to path array (v)
-      v[position] = origin;
-      
-      //Keep checking if there's another path, now beginning in the destination
-      //Make sure the new origin is not a vertex that has already been visited
-      int newOrigin = 1;
-      for(int checkV = 0; checkV < position; checkV++) 
-        if(v[checkV] == i->destination) newOrigin = 0;
-
-      //vertex to be visited is new
-      if(newOrigin) printShortestPathR(aGraph, i->destination, destination, position + 1, v, shortestPath, answer, foundPath);
-    }
-  }
-  else
-  {
-    //Path done
-    if(position+1 < *shortestPath && position < aGraph[0]->weight) 
-    {
-      *shortestPath = position+1;
-      //printf("Lowest weight found: %d\n", *lowestWeight);
-      v[position] = -1;
-      
-      //Copy answer to array
-      for(int i = 0; i <= position; i++)
-      {
-        answer[i] = v[i];
-      }
-      *foundPath = 1;
-    }
-  }
-}
-
-// Returns graph size (number of nodes, other than the special node 0).
-int getGraphSize(graph aGraph)
-{
-  return aGraph[0]->weight;
-}
-
-// Prints the shortest path between an origin and its destination.
-// Returns 1 if path was found. 0, otherwise.
-int printShortestPath(graph aGraph, int origin, int destination)
-{
-  int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
-  int *answer = (int*)malloc(sizeof(int) * (aGraph[0]->weight + 1));
-  int shortestPath = INT_MAX;
-  int foundPath = 0;
-  printShortestPathR(aGraph, origin, destination, 0, v, &shortestPath, answer, &foundPath); //returns array of lowest total weight
-  
-  //Now print it, if a result was found
-  if(foundPath){
-    printf("total: %d\n[", shortestPath);
-    int i = 0;
-    for(; answer[i] != -1; i++)
-    {
-      printf("%d -> ", answer[i]);
-    }
-    printf("%d]\n", destination);
-  }
-  
-  free(v); free(answer);
-
-  if(foundPath) return 1;
-  else return 0;
-}
+// Print Lowest Weight Path (Dijkstra) --------------------------------
 
 //Prints the path of lowest total weight between an origin and its destination. Uses the Dijkstra algorithm.
 // Returns 1 if path was found. 0, otherwise.
