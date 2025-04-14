@@ -190,7 +190,7 @@ void printLowestWeightPathR(graph aGraph, int origin, int destination, int posit
 }
 
 //Prints the path of lowest total weight between an origin and its destination
-int printLowestWeightPath(graph aGraph, int origin, int destination)
+int printLowestWeightPathBacktrack(graph aGraph, int origin, int destination)
 {
   int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
   int *answer = (int*)malloc(sizeof(int) * (aGraph[0]->weight + 1));
@@ -214,7 +214,6 @@ int printLowestWeightPath(graph aGraph, int origin, int destination)
   if(foundPath) return 1;
   else return 0;
 }
-
 
 void printShortestPathR(graph aGraph, int origin, int destination, int position, int v[], int* shortestPath, int* answer, int* foundPath)
 {
@@ -256,7 +255,14 @@ void printShortestPathR(graph aGraph, int origin, int destination, int position,
   }
 }
 
-//Prints the shortest path between an origin and its destination
+// Returns graph size (number of nodes, other than the special node 0).
+int getGraphSize(graph aGraph)
+{
+  return aGraph[0]->weight;
+}
+
+// Prints the shortest path between an origin and its destination.
+// Returns 1 if path was found. 0, otherwise.
 int printShortestPath(graph aGraph, int origin, int destination)
 {
   int *v = (int*)malloc(sizeof(int) * aGraph[0]->weight);
