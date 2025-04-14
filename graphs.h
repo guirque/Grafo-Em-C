@@ -288,3 +288,96 @@ int printShortestPath(graph aGraph, int origin, int destination)
   if(foundPath) return 1;
   else return 0;
 }
+
+//Prints the path of lowest total weight between an origin and its destination. Uses the Dijkstra algorithm.
+// Returns 1 if path was found. 0, otherwise.
+int printLowestWeightPath(graph aGraph, int origin, int destination)
+{
+  // Variables
+  // List of visited nodes
+  // List of minimum weight between nodes (algorithm output)
+  // Each node has an associated previous node (which gave it its minimum total weight), stored in a list.
+  
+  // Algorithm
+  // We will iterate through every node. On every iteration, we'll analyze the node with lowest distance to the origin that hasn't been analyzed yet.
+  // On every iteration, we will check the neighbors of the current node and update their distances if we can find lower paths.
+  // The current distance to compare will be the node's cost + the distance to the destination node.
+
+  // PS.: nodes start on 1, since node 0 is a special node.
+
+  int VERBOSE = 0;
+
+  // Setting up variables -------------------------
+  int graphSize = getGraphSize(aGraph);
+  if(destination > graphSize || origin > graphSize || origin < 1 || destination < 1) return 0;
+  
+  int* minimumWeightsToNodes = (int*)malloc(sizeof(int)*(graphSize+1)); // distance between origin and each node (determined by index).
+  for(int i = 0; i < graphSize+1; i++) minimumWeightsToNodes[i] = INT_MAX; //distance to other nodes starts as inf (or, in this case, INT_MAX).
+  minimumWeightsToNodes[origin] = 0; //distance to origin is 0.
+
+  int* visitedNodes = (int*)malloc(sizeof(int)*(graphSize+1)); // 1 if visited. 0 if not. Index is the node id.
+  for(int i = 0; i < graphSize+1; i++) visitedNodes[i] = 0; // every node starts unvisited.
+
+  int* prev = (int*)malloc(sizeof(int)*(graphSize+1)); // Index is the node id.
+  for(int i = 0; i < graphSize+1; i++) prev[i] = 0; // every node starts with prev = 0.
+
+  // Algorithm ------------------------------------
+  for(int i = 1; i < graphSize+1; i++)
+  {
+    // Get node with lowest minimum total weight value (could be updated to ease finding it)
+    int lowestIndex = origin; // lowest total weight index to unvisited node
+    int chosen = 0;
+    for(int j = 1; j < graphSize+1; j++)
+    {
+      if(!visitedNodes[j] && (!chosen || minimumWeightsToNodes[j] <= minimumWeightsToNodes[lowestIndex])) {lowestIndex = j; chosen = 1;}
+    }
+    int currentNodeIndex = lowestIndex;
+    if(VERBOSE) printf("\n- Visiting node %d\n", currentNodeIndex);
+
+    // Check all paths from it to nearby nodes
+    for(llist* currentNeighborEdge = aGraph[currentNodeIndex]; currentNeighborEdge != NULL; currentNeighborEdge = currentNeighborEdge->next)
+    {
+      // Updating minimum total weights
+      int newWeight = INT_MAX;
+      if(minimumWeightsToNodes[currentNodeIndex] != INT_MAX) newWeight = minimumWeightsToNodes[currentNodeIndex] + currentNeighborEdge->weight; //comparison to avoid scenarios of nodes that can't be reached by origin but have a one-way edge to a reachable node (resulting in INT_MAX + edge weight).
+      
+      if(VERBOSE)
+      {
+        printf("  - Checking neighbor %d, of minimum known total weight = %d\n", currentNeighborEdge->destination, minimumWeightsToNodes[currentNeighborEdge->destination]);
+        printf("    - New weight would be: %d\n", newWeight);
+        printf("    - Worth it? %d\n", newWeight < minimumWeightsToNodes[currentNeighborEdge->destination]);
+      }
+      
+      if(newWeight < minimumWeightsToNodes[currentNeighborEdge->destination]) 
+      {
+        minimumWeightsToNodes[currentNeighborEdge->destination] = newWeight; //update minimum weight
+        prev[currentNeighborEdge->destination] = currentNodeIndex; //update prev
+      }
+
+    }
+
+    visitedNodes[currentNodeIndex] = 1;
+  }
+
+  int minimunWeight = minimumWeightsToNodes[destination];
+  int pathFound = minimunWeight != INT_MAX;
+  if(pathFound)
+  {
+    printf("Dijkstra minimum total weight from node %d to node %d: %d\n", origin, destination, minimunWeight);
+    printf("Minimum path: [%d", destination);
+    
+    // Could use a stack
+    // Go from destination to origin, using the prev values to get the path.
+    for(int previousNode = prev[destination];  previousNode != 0; previousNode = prev[previousNode])
+    {
+      printf(" <- %d", previousNode);
+    }
+    printf("]");
+  }
+  
+  free(minimumWeightsToNodes);
+  free(visitedNodes);
+  free(prev);
+
+  return pathFound;
+}
